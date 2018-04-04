@@ -36,7 +36,7 @@ def delete_x():
 
 @app.route('/clear_board')
 def clear():
-    sleep(2)
+    sleep(1)
     ret=game.clear_board()
     ret=json.dumps(ret)
     return jsonify(ret=ret)
