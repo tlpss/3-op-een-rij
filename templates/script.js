@@ -9,15 +9,13 @@ function fix_size(){
 
 /*sets indices of fields -> field.index() */
 function set_indices() {
-    console.log("hallo");
     $(".box").each( function(index) {
         set_index($(this),index);
     });
-    console.log("indices set ");
     return;
 }
 
-
+/*puts right symbol in a field*/
 function add_mark(field, state) {
     switch(state) {
         case 0:
@@ -40,14 +38,11 @@ function add_mark(field, state) {
 
 /*this function draws the board based on a list with states */
 function draw_board(board) {
-    console.log("drawing board")
     num_x=0; 
     num_o=0;
     for (var index=0;index<9;index++) {
         add_mark($(".box:eq("+index+")"), board[index]);
     }
-    console.log("#x,#o");
-    console.log(num_x,num_o);
     return;
 }
 
@@ -60,15 +55,33 @@ function send_to_server_index_new(jqevent) {
         JSON.stringify(field.index()),
         function(ret) {
         var val = ret["ret"];
-        val=JSON.parse(val)
-        var board=val["board"]
-        console.log(board);
+        val=JSON.parse(val);
+        var board=val["board"];
+        var won=val["won"];
         draw_board(board);
+        if(won==2) {
+            player_won++;
+            $.getJSON("/clear_board","",
+            function(ret) {
+                var val = ret["ret"];
+                val=JSON.parse(val);
+                var board=val["board"];
+                draw_board(board); 
+            });
+        }
+        if (won==1) {
+            CU_won++
+            $.getJSON("/clear_board","",
+            function(ret) {
+                var val = ret["ret"];
+                val=JSON.parse(val);
+                var board=val["board"];
+                draw_board(board); 
+            });
+        }
         if(num_x==3) {
         $(".box").off();
-        $(".box").click(send_to_server_index_to_remove);
-        console.log(num_x);
-        console.log("direct click to index remove");  
+        $(".box").click(send_to_server_index_to_remove); 
         }
     
       
@@ -83,22 +96,16 @@ function send_to_server_index_to_remove(jqevent){
             JSON.stringify(field.index()),
             function(ret) {
             var val = ret["ret"];
-            console.log(ret);
-            val=JSON.parse(val)
-            console.log(val);
-            var board=val["board"]
-            var valid=val["valid"]
-            console.log(board);
+            val=JSON.parse(val);
+            var board=val["board"];
+            var valid = val["succes"]
             if (valid) {
                 draw_board(board);
                 num_x=2;
                 $(".box").off(); //deletes all previous handlers ( avoids making extra action each  time)
                 $(".box").click(send_to_server_index_new);
-                console.log(num_x);
-                console.log("direct click to index new");
                 return;
-            }
-
+                }
             })
     
 }
@@ -106,16 +113,15 @@ function send_to_server_index_to_remove(jqevent){
 
 /*gameplay*/
 set_indices();
-global: //used to store the number of x and o's and #games won
+global: //used to store the number of x,o and games won
         var num_x=0;
         var num_o=0;
         var player_won=0;
         var CU_won=0;
 
 $( document ).ready(function() {
-  fix_size();
-  console.log("direct click to index new"); //init bij adding 'X' on click
-  $(".box").click(send_to_server_index_new);
+  fix_size(); 
+  $(".box").click(send_to_server_index_new); //init bij adding 'X' on click
 });
 
 $( window ).resize(fix_size);
