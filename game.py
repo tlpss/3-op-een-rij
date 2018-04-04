@@ -56,9 +56,9 @@ class Game:
         x_pos=self.get_position_from_JSON_args(args)
         if self._board[x_pos]==self._pieces["empty"]:
             self._board[x_pos]=self._pieces["x"]
-            return self.get_board_JSON_ready()
+            return self.get_board_JSON_ready(),1
         else:
-            return -1
+            return self.get_board_JSON_ready(),0
 
     def put_and_remove_o(self):
         self._board[self.remove_and_set_random_new_pos_o()]=self._pieces["o"]

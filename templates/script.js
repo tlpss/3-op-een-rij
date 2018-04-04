@@ -61,6 +61,8 @@ function send_to_server_index_new(jqevent) {
         draw_board(board);
         if(won==2) {
             player_won++;
+            num_o=0;
+            num_x=0;
             $.getJSON("/clear_board","",
             function(ret) {
                 var val = ret["ret"];
@@ -71,6 +73,8 @@ function send_to_server_index_new(jqevent) {
         }
         if (won==1) {
             CU_won++
+            num_o=0;
+            num_x=0;
             $.getJSON("/clear_board","",
             function(ret) {
                 var val = ret["ret"];
@@ -83,7 +87,7 @@ function send_to_server_index_new(jqevent) {
         $(".box").off();
         $(".box").click(send_to_server_index_to_remove); 
         }
-    
+    document.getElementById("insert").innerHTML="You won: "+ player_won+ " games    CU won:" +CU_won+ " games";
       
     });
     return; 

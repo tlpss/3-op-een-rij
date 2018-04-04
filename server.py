@@ -19,7 +19,9 @@ def static_files(name):
 @app.route('/next_move')
 def next_move():
     args= request.args.items() #gets args form URL  
-    game.put_x(args)
+    ret=game.put_x(args)
+    if ret[1]==0:
+        return jsonify(ret=json.dumps(ret[0]))
     ret=game.put_and_remove_o()
     ret= json.dumps(ret)
     return jsonify(ret=ret)
@@ -34,11 +36,12 @@ def delete_x():
 
 @app.route('/clear_board')
 def clear():
-    #sleep(5)
+    sleep(2)
     ret=game.clear_board()
     ret=json.dumps(ret)
     return jsonify(ret=ret)
 
 
 if (__name__=='__main__'):
-    app.run(debug=True) 
+    #app.run(host='0.0.0.0') #make visible accross network, ensure that debug=NONE 
+    app.run(debug=True)
