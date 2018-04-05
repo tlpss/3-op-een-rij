@@ -1,10 +1,12 @@
 import random
+from Monte_Carlo_Player import MonteCarloPlayer
 
 class Game:
     def __init__(self):
         self._board=[0 for i in range(9)]
         self._pieces= {"empty":0,"o":1,"x":2}
         self._games_won=[0,0] #<x,o>
+        self._monte=MonteCarloPlayer(500)
     
     def get_board_JSON_ready(self,succes=1):
         x_won=self.check_won(2)
@@ -33,6 +35,7 @@ class Game:
             if numb==piece_int:
                 count+=1
         return count
+        
     def check_tripple(self,index1,index2,index3,piece_int):
         return (self._board[index1]==self._board[index2] and self._board[index2]==self._board[index3] and self._board[index3]==piece_int)
 
@@ -61,7 +64,15 @@ class Game:
             return self.get_board_JSON_ready(),0
 
     def put_and_remove_o(self):
-        self._board[self.remove_and_set_random_new_pos_o()]=self._pieces["o"]
+        index1,index2=self._monte.get_optimal_next_move(self._board[:])
+        print (index1)
+        print (index2)
+        if index1==-1:
+            self._board[index2]=self._pieces["o"]
+        else:
+            self._board[index1]=self._pieces["empty"]
+            self._board[index2]=self._pieces["o"]
+        print (self._board)
         return self.get_board_JSON_ready()
     
     def remove_and_set_random_new_pos_o(self):
@@ -82,6 +93,4 @@ class Game:
                 empty.append(index)
         random.shuffle(empty)
         return empty[0] 
-
-
 
